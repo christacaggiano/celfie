@@ -1,1 +1,1 @@
-# CELFIE (CELl Free dna decomposItion Expectation Maximization) 
+# CELFIE (CELl Free dna decomposItion Expectation maximization) 
