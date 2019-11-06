@@ -1,119 +1,19 @@
 #!/usr/bin/env python
 
-# ## Imports
-
-
+########  imports  ########
 import numpy as np 
 import pandas as pd 
-import random 
-import pickle as pkl
-import bottleneck as bn
-import sys 
-import math
+from random import randint
+import pickle  # to save output 
+import bottleneck as bn # substantially speeds up calculations with nan's
 import os 
+import sys 
+import time 
+import mix_functions  # separate python file with rules for creating mixtures to simulate 
 
 
+################  support functions   ################
 
-# ## Functions
-
-def generate_alpha(tissue, people, precision=10):
-    
-    vals = np.random.choice(precision, size=(people, tissue)) 
-    return np.array([row/row.sum() for row in vals])  # proportions must sum to 1
-    
-
-def generate_gamma(i, j, data, t): 
-    """
-    randomly generates a matrix of methylation values between 0 and 1 
-    :param int tissue: number of tissues 
-    :param int cpg: number of cpgs
-    :return: cpg x tissue matrix of random methylation values 
-    """
-    
-    gamma = np.zeros((i, j))
-    
-    for n in range (j): 
-        gamma[:, n] = np.random.uniform(0, 1, size=i)
-    
-    return gamma
-        
-# def generate_gamma(i, j, data, t): 
-#     df = data.sample(n=j)
-#     df = df.iloc[:, 0:i]
-    
-#     cov = df.cov()
-#     identity = np.identity(i)
-
-#     cov = (t*identity)+(1-t)*cov
-
-#     gamma = np.zeros((i, j))
-    
-#     for n in range (j): 
-#         gamma[:, n] = np.random.multivariate_normal(df.iloc[n,:], cov)
-        
-#     gamma[gamma < 0] = 0 
-#     gamma[gamma > 1] = 1
-    
-#     return gamma
-
-
-
-def generate_beta(alpha, gamma, x_depths): 
-    
-    total_indiv = alpha.shape[0]
-    i, total_cpg = gamma.shape
-    
-    beta = np.zeros((total_indiv, total_cpg))
-    
-    for n in range(total_indiv): 
-        for j in range(total_cpg): 
-           
-            depth = x_depths[n, j]
-            gamma_cpg = gamma[:, j]
-
-            mix = np.random.choice(i, depth, replace=True, p=alpha[n, ])
-            probability = gamma_cpg[mix]
-            
-            beta[n, j] = np.sum(np.random.binomial(1, probability, size=depth))
-            
-    return beta
-            
-
-
-def generate_counts(count, probability): 
-    
-    return np.random.binomial(count, probability, size=probability.shape)
-
-
-
-def generate_depths(depth, shape): 
-    
-    return np.random.poisson(depth, shape)
-    
-
-# ## EM 
-
-def expectation(gamma, alpha): 
-    
-    individuals, tissues = alpha.shape
-    sites = gamma.shape[1]
-
-    p0 = np.zeros((tissues, sites, individuals))
-    p1 = np.zeros((tissues, sites, individuals))
-
-    for n in range(individuals):
-        
-        for j in range(sites):
-            p0_j = (1-gamma[:, j])*alpha[n, : ]
-            p0_j = p0_j/(np.sum(p0_j))
-            
-            p1_j = (gamma[:, j])*alpha[n, : ]
-            p1_j = p1_j/(np.sum(p1_j))
-            
-            p0[:, j, n] = p0_j 
-            p1[:, j, n] = p1_j 
-            
-    return p0, p1
 
 def add_pseduocounts(value, array, meth, meth_depths):
     """ finds values of gamma where logll cannot be computed, adds pseudo-counts to make 
@@ -289,79 +189,93 @@ def em(x, x_depths, y, y_depths, num_iterations):
     
     return alpha, gamma
 
+################## run #######################
 
-def generate_em_replicate(i, j, depth, gamma_depth, data, t): 
-    
-    # alpha_int = generate_alpha(i, n) 
-    # alpha_int = np.eye(i)
-    alpha_int = np.array(list(range(1, 11)))
-    alpha_int = (alpha_int/alpha_int.sum()).reshape(1, len(alpha_int))
-
-    gamma_int = generate_gamma(i, j, data, t)
-    
-    Y_int_depths = generate_depths(gamma_depth, (i, j))
-    Y_int = generate_counts(Y_int_depths, gamma_int)
-    
-    X_int_depths = generate_depths(depth, (n, j))
-
-    X_int = generate_beta(alpha_int, gamma_int, X_int_depths) 
-
-    # Y_int_depths[-1] = 0 
-    # Y_int[-1] = 0  
-   
-    return Y_int_depths, Y_int, X_int_depths, X_int, alpha_int, gamma_int
 
 if __name__=="__main__": 
+    
+    start_time = time.time()
 
-    # np.random.seed(500)
+    data = sys.argv[1]
+    output_dir = sys.argv[2]
+    sites = sys.argv[3]
+    iterations = sys.argv[4]
+    mix_type = sys.argv[5]
+    iteration_number = sys.argv[6]
+    convergence_criteria = sys.argv[7]
 
-    output_dir = sys.argv[1]
-    rep_num = int(sys.argv[2])
-    i = int(sys.argv[3])
-    j = int(sys.argv[4])
-    n = int(sys.argv[5])
-    depth = int(sys.argv[6])
-    gamma_depth = int(sys.argv[7])
-    t = float(sys.argv[8])
-
-    if not os.path.exists(output_dir):
+    if not os.path.exists(output_dir) and int(iteration_number)==1:
         os.makedirs(output_dir)
+        print("made " + output_dir + "/")
+        print()
+    else: 
+        print("writing to " + output_dir + "/")
 
-    roadmap_chip = pd.read_csv("matched_wgbs_hg38_two_reps.txt", header=None, sep="\t")
 
-    rep1 = roadmap_chip.iloc[:, 3:18]
-    rep2 = roadmap_chip.iloc[:, 21:]
+    data_df = pd.read_csv(data, header=None, delimiter="\t")
+    
+    print("finshed reading " + str(data))
+    print()
 
-    reference_labels = ["spleen", "pancreas", "liver", "muscle", "leuk", "lung epithelial cell", "adipocyte", 
-                    "Ischiatic_nerve", "gastric mucosa", "esophagus mucosa", "fallopian tube", "thyroid", 
-                   "stomach", "adrenp.nanl", "left atrium"]
 
-    rep1.columns = reference_labels
-    rep2.columns = reference_labels
+    output_file = output_dir + "/" + iteration_number + ".pkl"
+    print("beginning generation of " + output_file)
+    print()
 
-    avg_rep = pd.concat([rep1, rep2]).groupby(level=0).mean()
-    avg_rep = avg_rep[avg_rep.median(axis=1)>0.1]
-    avg_rep = avg_rep[avg_rep.median(axis=1)<0.9]
 
-    avg_rep = avg_rep[avg_rep.var(axis=1)>0.05]
+    method_to_call = getattr(mix_functions, mix_type)
 
-    # avg_rep = pd.read_csv("chip_avg_10k.csv")
 
-    Y_depths, Y, X_depths, X, alpha_true, gamma_int = generate_em_replicate(i, j, depth, gamma_depth, avg_rep, t)
+    x, x_depths, y, y_depths = method_to_call(data_df, int(sites))
 
-    alpha, gamma = em(X, X_depths, Y, Y_depths, 1000)
 
-    with open(output_dir + "/" + str(rep_num) + "_alpha_est.pkl", "wb") as f:
-        pkl.dump(alpha, f)
+    a, g = em(x, x_depths, y, y_depths, int(iterations))
 
-    with open(output_dir + "/" + str(rep_num)  + "_alpha_true.pkl", "wb") as f:
-        pkl.dump(alpha_true, f)
+    # a, g = em(x, x_depths, y, y_depths, int(iterations), float(convergence_criteria), output_file)
 
-    with open(output_dir + "/" + str(rep_num) + "_gamma_est.pkl", "wb") as f:
-        pkl.dump(gamma, f)
+    with open(output_file, 'wb') as f:
+        print("writing " + output_file)
+        print()
+        pickle.dump(a, f)
 
-    with open(output_dir + "/" + str(rep_num)  + "_gamma_true.pkl", "wb") as f:
-        pkl.dump(gamma_int, f)
+    elapsed_time = time.time() - start_time
+    print("elapsed time: " + time.strftime("%H:%M:%S", time.gmtime(elapsed_time)))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
