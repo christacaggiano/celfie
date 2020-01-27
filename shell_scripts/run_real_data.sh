@@ -5,10 +5,9 @@
 #$ -l h_rt=72:00:00
 #$ -l highp
 #$ -t 1-10
-#### UGE parameters used, parallel job with 10 restarts 
+#### UGE parameters used, parallel job with 10 replicates 
 
 conda activate py37
 
 # run em on pregnancy data 
-# requires mixing function to be specificed in EM/mix_function.py 
-python em.py ../data/pregnancy_sample_data.txt pregnancy_sample 1000 1000 preg $SGE_TASK_ID 0.0001
+python EM/em.py data/sample_data.txt EM/sample_output 15 1000 1 1 0.001 1 

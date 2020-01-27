@@ -3,14 +3,10 @@
 ########  imports  ########
 import numpy as np 
 import pandas as pd 
-from random import randint
-import pickle  # to save output 
+import pickle as pkl # to save output 
 import bottleneck as bn # substantially speeds up calculations with nan's
 import os 
 import sys 
-import time 
-import mix_functions  # separate python file with rules for creating mixtures to simulate 
-
 
 ################  support functions   ################
 
@@ -144,7 +140,7 @@ def maximization(p0, p1, x, x_depths, y, y_depths):
     if check_gamma(gamma): 
         add_pseduocounts(1, gamma, y, y_depths)
         add_pseduocounts(0, gamma, y, y_depths)
-        gamma = (t1 + y) / (t0 + t1 + y_depths)  # recalculate gamma
+        gamma = (term1 + y) / (term0 + term1 + y_depths)   # recalculate gamma
     
     # return alpha to be normalized to sum to 1 
     return np.array([row/row.sum() for row in new_alpha]), gamma 
@@ -153,7 +149,7 @@ def maximization(p0, p1, x, x_depths, y, y_depths):
  ########################  run em  ########################
    
  
-def em(x, x_depths, y, y_depths, num_iterations): 
+def em(x, x_depths, y, y_depths, num_iterations, convergence_criteriav): 
     
     # randomly intialize alpha for each iteration 
     alpha = np.random.uniform(size=(x.shape[0], y.shape[0]))
@@ -170,14 +166,13 @@ def em(x, x_depths, y, y_depths, num_iterations):
     for i in range(num_iterations): 
 
         p0, p1 = expectation(gamma, alpha) 
-        # ll = log_likelihood(p0, p1, x_depths, x, y_depths, y, gamma, alpha)
         a, g = maximization(p0, p1, x, x_depths, y, y_depths)
         
         # check convergence of alpha and gamma
         alpha_diff = np.mean(abs(a-alpha))/np.mean(abs(alpha))
         gamma_diff = np.mean(abs(g-gamma))/np.mean(abs(gamma))
 
-        if alpha_diff + gamma_diff < 0.0001:  # if convergence criteria, break 
+        if alpha_diff + gamma_diff < convergence_criteriav:  # if convergence criteria, break 
             break 
 
         else:  # set current evaluation of alpha and gamma 
@@ -185,25 +180,52 @@ def em(x, x_depths, y, y_depths, num_iterations):
             gamma = g 
     
 
-    print(log_likelihood(p0, p1, x_depths, x, y_depths, y, gamma, alpha))  # print ll for random restarts
+    ll = log_likelihood(p0, p1, x_depths, x, y_depths, y, gamma, alpha)  # print ll for random restarts
     
-    return alpha, gamma
+    return alpha, gamma, ll
+
+################## read in data #######################
+
+def define_arrays(sample, num_samples, num_unk):
+    """
+    takes input data matrix- cfDNA and reference, and creates the arrays to run in EM. Adds 1 unknown
+    sample: pandas dataframe of data (samples and reference). Assumes there is 3 columns (chrom, start, end)
+    before the samples and before the reference 
+    """
+
+    test = sample.iloc[:, 3:(num_samples*2)+3].values.T
+    train = sample.iloc[:, (num_samples*2)+3+3:].values.T
+
+    x = test[::2, :]
+    x_depths = test[1::2, :]
+
+    y = train[::2, :]
+    y_depths = train[1::2, :]
+
+    # add one unknown component 
+    unknown = np.zeros((num_unk, y_depths.shape[1]))
+    y_depths_unknown = np.append(y_depths, unknown, axis=0)
+    y_unknown = np.append(y, unknown, axis=0)
+
+    return np.nan_to_num(x), np.nan_to_num(x_depths), np.nan_to_num(y_unknown), np.nan_to_num(y_depths_unknown)
 
 ################## run #######################
 
 
+
 if __name__=="__main__": 
     
-    start_time = time.time()
-
+    # read command line input parameters 
     data = sys.argv[1]
     output_dir = sys.argv[2]
-    sites = sys.argv[3]
+    num_samples = sys.argv[3]
     iterations = sys.argv[4]
-    mix_type = sys.argv[5]
+    num_unk = sys.argv[5]
     iteration_number = sys.argv[6]
     convergence_criteria = sys.argv[7]
+    num_random_restart = sys.argv[8]
 
+    # make output directory if it does not exist
     if not os.path.exists(output_dir) and int(iteration_number)==1:
         os.makedirs(output_dir)
         print("made " + output_dir + "/")
@@ -211,72 +233,33 @@ if __name__=="__main__":
     else: 
         print("writing to " + output_dir + "/")
 
-
-    data_df = pd.read_csv(data, header=None, delimiter="\t")
+    data_df = pd.read_csv(data, header=None, delimiter="\t")  # read input samples/reference data
     
     print("finshed reading " + str(data))
     print()
 
+    output_alpha_file = output_dir + "/" + iteration_number + "_alpha.pkl"
+    output_gamma_file = output_dir + "/" + iteration_number + "_gamma.pkl"
 
-    output_file = output_dir + "/" + iteration_number + ".pkl"
-    print("beginning generation of " + output_file)
+    print("beginning generation of " + output_alpha_file)
     print()
 
+    # make input arrays and add the specified number of unknowns 
+    x, x_depths, y, y_depths = define_arrays(data_df, int(num_samples), int(num_unk))
 
-    method_to_call = getattr(mix_functions, mix_type)
+    # Run EM with the specified iterations and convergence criteria
+    random_restarts = []
 
+    for i in range(int(num_random_restart)): 
+        alpha, gamma, ll = em(x, x_depths, y, y_depths, int(iterations), float(convergence_criteria))
+        random_restarts.append((ll, alpha, gamma))
 
-    x, x_depths, y, y_depths = method_to_call(data_df, int(sites))
+    ll_max, alpha_max, gamma_max = max(random_restarts)  # pick best random restart per replicate
 
+    # write estimates as pickle files 
+    with open(output_dir + "/" + str(iteration_number) + "_alpha.pkl", "wb") as f:
+        pkl.dump(alpha_max, f)
 
-    a, g = em(x, x_depths, y, y_depths, int(iterations))
-
-    # a, g = em(x, x_depths, y, y_depths, int(iterations), float(convergence_criteria), output_file)
-
-    with open(output_file, 'wb') as f:
-        print("writing " + output_file)
-        print()
-        pickle.dump(a, f)
-
-    elapsed_time = time.time() - start_time
-    print("elapsed time: " + time.strftime("%H:%M:%S", time.gmtime(elapsed_time)))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    with open(output_dir + "/" + str(iteration_number) + "_gamma.pkl", "wb") as f:
+        pkl.dump(gamma_max, f)
 
