@@ -3,6 +3,7 @@
 ## Overview
 Expectation maximization algorithm to decompose complex mixtures of cfDNA into the tissues generating the cfDNA fragments. Required input is methylated cfDNA, either WGBS or Illumina 450K with downsampled read counts, and a reference panel of tissues to estimate their contribution to the cfDNA. CelFiE can estimate an arbitrary number of unknown or missing tissues from your reference that are truly in the cfDNA mixtures.
 
+
 ## Preparing Data
 
 CelFiE expects the methylation data for a cfDNA individual or reference cell type is in the form of # of methylated reads, # of total reads. For example for one sample, the file could like like:
@@ -30,19 +31,22 @@ chr14	55296905	55297406	89.0	115.0	74.0	83.0  chr1	48159309	48159810	168.987	173
 To prepare CelFiE files from Bismark output, see `prepare_bismark.sh`
 
 ## Code
-Anaconda environment file specified in `celfie_conda_env.yml`
+
+### Installation 
+
+To install CelFiE, clone or fork this repository using `git clone https://github.com/christacaggiano/celfie.git`. All required packages can be installed using [Anaconda](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html) using the environment file specified in `celfie_conda_env.yml`. Run `conda env create -f celfie_conda_env.yml`
 
 Full implementation of the EM model at `EM/em.py`. Code to generate simulations can be found in `EM/simulations`.
 
-Run EM script as follows:
+### EM Script 
+
+After preparing data as above, the EM script as follows:
 
 ``` python EM/em.py <input_file> <output_directory> <num of cfDNA samples> <max EM iterations> <num of unknown categories> <parallel job ID> <convergence> <num of random restarts per replicate> ```
 
-EX:
-``` python EM/em.py data/sample_data.txt EM/sample_output 15 1000 1 1 0.001 1 ```
+### Sample Code 
 
-To run many parallel replicates on a SGE or UGE cluster configuration, see run_real_data.sh
-`qsub run_real_data.sh`
+``` python EM/em.py data/sample_data.txt EM/sample_output 15 1000 1 1 0.001 1 ```
 
 Currently, the estimated methylation proportions for the reference and the estimated cell type proportions are output in pickled python numpy arrays. These can be read back into python for further analysis by the following
 
@@ -51,6 +55,14 @@ import pickle as pkl
 cell_proportions = pkl.load(open("EM/sample_output/1_alpha.pkl", "rb"))
 methylation_proportions = pkl.load(open("EM/sample_output/1_gamma.pkl", "rb"))
 ```
+
+### Parallelization 
+
+To run many parallel replicates on a SGE or UGE cluster configuration, see run_real_data.sh
+`qsub run_real_data.sh`
+
+## Contact 
+For any questions with this code, please contact christa@g.ucla.edu 
 
 ## Citation
 For more details on CelFiE, see:
