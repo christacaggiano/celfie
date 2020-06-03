@@ -7,6 +7,7 @@ import pickle as pkl # to save output
 import bottleneck as bn # substantially speeds up calculations with nan's
 import os 
 import sys 
+np.seterr(divide='ignore', invalid='ignore')
 
 ################  support functions   ################
 
