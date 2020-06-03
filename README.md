@@ -61,6 +61,10 @@ methylation_proportions = pkl.load(open("EM/sample_output/1_gamma.pkl", "rb"))
 To run many parallel replicates on a SGE or UGE cluster configuration, see run_real_data.sh
 `qsub run_real_data.sh`
 
+### Figures 
+
+Jupyter notebooks to reproduce figures and statistical analyses for the final version of this manuscript can be found in `paper_figures` directory. 
+
 ## Contact 
 For any questions with this code, please contact christa@g.ucla.edu 
 

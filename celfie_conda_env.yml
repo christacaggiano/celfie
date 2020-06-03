@@ -23,7 +23,6 @@ dependencies:
   - ncurses=6.1=h0a44026_1
   - numpy=1.18.1=py37h7241aed_0
   - numpy-base=1.18.1=py37h6575580_1
-  - openssl=1.1.1=h1de35cc_0
   - pandas=0.25.3=py37h0a44026_0
   - pip=19.3.1=py37_0
   - python=3.7.6=h359304d_2
@@ -37,5 +36,4 @@ dependencies:
   - wheel=0.33.6=py37_0
   - xz=5.2.4=h1de35cc_4
   - zlib=1.2.11=h1de35cc_3
-prefix: /Users/christacaggiano/miniconda3/envs/celfie
 
