@@ -34,7 +34,7 @@ To prepare CelFiE files from Bismark output, see `prepare_bismark.sh`
 
 ### Installation 
 
-To install CelFiE, clone or fork this repository using `git clone https://github.com/christacaggiano/celfie.git`. All required packages can be installed using [Anaconda](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html) using the environment file specified in `celfie_conda_env.yml`. Run `conda env create -f celfie_conda_env.yml`
+To install CelFiE, clone or fork this repository using `git clone https://github.com/christacaggiano/celfie.git`. All required packages can be installed using [Anaconda](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html) using the environment file specified in `celfie_conda_env.yml`. Run `conda env create -f celfie_conda_env.yml -n celfie_env`
 
 Full implementation of the EM model at `EM/em.py`. Code to generate simulations can be found in `EM/simulations`.
 
