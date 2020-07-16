@@ -194,8 +194,26 @@ def define_arrays(sample, num_samples, num_unk):
     before the samples and before the reference 
     """
 
-    test = sample.iloc[:, 3:(num_samples*2)+3].values.T
-    train = sample.iloc[:, (num_samples*2)+3+3:].values.T
+    # Split dataframe in two parts
+    split = (num_samples * 2) + 3
+    test_df = sample.iloc[:, :split]
+    train_df = sample.iloc[:, split:]
+
+    # Get genomic coordinates of test samples
+    get_idx = lambda df: df.iloc[:, 0] + '-' + df.iloc[:, 1].astype(str) + '-' + df.iloc[:, 2].astype(str)
+    test_idx = get_idx(test_df)
+    test_df = test_df.set_index(test_idx, drop=False)
+
+    # Get genomic coordinates of reference samples
+    train_idx = get_idx(train_df)
+    train_df = train_df.set_index(train_idx, drop=False)
+
+    # Re-order reference samples by coordinates
+    train_df = train_df.loc[test_idx, :]
+
+    # Convert dataframes to arrays
+    test = test_df.iloc[:, 3:].values.T
+    train = train_df.iloc[:, 3:].values.T
 
     x = test[::2, :]
     x_depths = test[1::2, :]
