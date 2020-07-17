@@ -48,16 +48,9 @@ def expectation(gamma, alpha):
 
     gamma: np matrix of the estimated 'true' methylation proportions 
     alpha: np matrix of estimated mixing proportions """
-    
 
-    individuals, tissues = alpha.shape
-    sites = gamma.shape[1]
-
-    alpha = alpha.T[:, np.newaxis, :]
-    gamma = gamma[..., np.newaxis]
-
-    p0 = (1. - gamma) * alpha
-    p1 = gamma * alpha
+    p0 = (1. - gamma[..., np.newaxis]) * alpha.T[:, np.newaxis, :]
+    p1 = gamma[..., np.newaxis] * alpha.T[:, np.newaxis, :]
 
     p0 /= np.nansum(p0, axis=0)[np.newaxis, ...]
     p1 /= np.nansum(p1, axis=0)[np.newaxis, ...]
@@ -86,9 +79,9 @@ def log_likelihood(p0, p1, x_depths, x, y_depths, y, gamma, alpha):
     x_depths = x_depths.T[np.newaxis, ...]
 
     ll = 0
-    ll += np.sum((y + p1 * x) * np.log(gamma))
-    ll += np.sum((y_depths - y + p0 * (x_depths - x)) * np.log(1. - gamma))
-    ll += np.sum((p1 * x + (x_depths - x) * p0) * np.log(alpha))
+    ll += np.sum(np.nan_to_num(y + p1 * x) * np.log(gamma))
+    ll += np.sum(np.nan_to_num(y_depths - y + p0 * (x_depths - x)) * np.log(1. - gamma))
+    ll += np.sum(np.nan_to_num(p1 * x + (x_depths - x) * p0) * np.log(alpha))
 
     return ll 
 
@@ -108,10 +101,6 @@ def maximization(p0, p1, x, x_depths, y, y_depths):
 
     individuals = p0.shape[2]
 
-    # initialize vector 
-    ones_vector = np.ones(shape=(y.shape[0]))
-    new_alpha = np.zeros((x.shape[0], y.shape[0]))
-
     # in case of overflow or error, transform nans to 0 and inf to large float  
     p0 = np.nan_to_num(p0)
     p1 = np.nan_to_num(p1)
@@ -122,24 +111,25 @@ def maximization(p0, p1, x, x_depths, y, y_depths):
     term0 = 0 
     term1 = 0 
 
+    new_alpha = np.zeros((x.shape[0], y.shape[0]))
     for n in range(individuals):
        
-        new_alpha[n, :] = np.dot(p1[:, :, n], x[n,:]) + np.matmul(p0[:, :, n], (x_depths[n, :]-x[n, :]))
+        new_alpha[n, :] = np.dot(p1[:, :, n], x[n, :]) + np.matmul(p0[:, :, n], (x_depths[n, :] - x[n, :]))
     
-        term1 +=  p1[:, :, n] * (np.outer(ones_vector, x[n, :]))
-        term0 +=  p0[:, :, n] * (np.outer(ones_vector, x_depths[n, :]-x[n, :]))
+        term1 +=  p1[:, :, n] * x[np.newaxis, n, :]
+        term0 +=  p0[:, :, n] * (x_depths[np.newaxis, n, :] - x[np.newaxis, n, :])
     
-    gamma = (term1 + y) / (term0 + term1 + y_depths)  # calculate new gamma 
+    new_gamma = (term1 + y) / (term0 + term1 + y_depths)  # calculate new gamma 
 
     # check if gamma goes out of bounds, if so add psuedocounts to misbehaving y values
-    if check_gamma(gamma): 
-        add_pseudocounts(1, gamma, y, y_depths)
-        add_pseudocounts(0, gamma, y, y_depths)
-        gamma = (term1 + y) / (term0 + term1 + y_depths)   # recalculate gamma
+    if check_gamma(new_gamma): 
+        add_pseudocounts(1, new_gamma, y, y_depths)
+        add_pseudocounts(0, new_gamma, y, y_depths)
+        new_gamma = (term1 + y) / (term0 + term1 + y_depths)   # recalculate gamma
     
     # return alpha to be normalized to sum to 1
     normalized_new_alpha = new_alpha / np.sum(new_alpha, axis=1)[:, np.newaxis]
-    return normalized_new_alpha, gamma 
+    return normalized_new_alpha, new_gamma 
  
 
  ########################  run em  ########################
@@ -252,28 +242,17 @@ if __name__=="__main__":
     print("finished reading " + str(data))
     print()
 
-    output_alpha_file = output_dir + "/" + iteration_number + "_alpha.pkl"
-    output_gamma_file = output_dir + "/" + iteration_number + "_gamma.pkl"
-
-    print("beginning generation of " + output_alpha_file)
-    print()
-
     # make input arrays and add the specified number of unknowns 
     x, x_depths, y, y_depths = define_arrays(data_df, int(num_samples), int(num_unk))
 
     # Run EM with the specified iterations and convergence criteria
     random_restarts = []
-
     for i in range(int(num_random_restart)): 
         alpha, gamma, ll = em(x, x_depths, y, y_depths, int(iterations), float(convergence_criteria))
         random_restarts.append((ll, alpha, gamma))
 
-    ll_max, alpha_max, gamma_max = max(random_restarts)  # pick best random restart per replicate
+    ll_best, alpha_best, gamma_best = max(random_restarts)  # pick best random restart per replicate
 
-    # write estimates as pickle files 
-    with open(output_dir + "/" + str(iteration_number) + "_alpha.pkl", "wb") as f:
-        pkl.dump(alpha_max, f)
-
-    with open(output_dir + "/" + str(iteration_number) + "_gamma.pkl", "wb") as f:
-        pkl.dump(gamma_max, f)
-
+    # write estimates as pickle files
+    np.save(os.path.join(output_dir, '%i_alpha.npy'), alpha_best)
+    np.save(os.path.join(output_dir, '%i_gamma.npy'), gamma_best)
