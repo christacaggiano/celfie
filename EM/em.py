@@ -230,7 +230,7 @@ if __name__=="__main__":
     num_random_restart = sys.argv[8]
 
     # make output directory if it does not exist
-    if not os.path.exists(output_dir) and int(iteration_number)==1:
+    if not os.path.exists(output_dir) and int(iteration_number) == 1:
         os.makedirs(output_dir)
         print("made " + output_dir + "/")
         print()
@@ -254,5 +254,5 @@ if __name__=="__main__":
     ll_best, alpha_best, gamma_best = max(random_restarts)  # pick best random restart per replicate
 
     # write estimates as pickle files
-    np.save(os.path.join(output_dir, '%i_alpha.npy'), alpha_best)
-    np.save(os.path.join(output_dir, '%i_gamma.npy'), gamma_best)
+    np.save(os.path.join(output_dir, '%i_alpha.npy' % int(iteration_number)), alpha_best)
+    np.save(os.path.join(output_dir, '%i_gamma.npy' % int(iteration_number)), gamma_best)
