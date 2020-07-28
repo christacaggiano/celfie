@@ -44,6 +44,8 @@ After preparing data as above, the EM script as follows:
 
 ``` python EM/em.py <input_file> <output_directory> <num of cfDNA samples> <max EM iterations> <num of unknown categories> <parallel job ID> <convergence> <num of random restarts per replicate> ```
 
+Since there is some stochasticity in the EM intialization > 10 random restarts is desirable for a final data run. 
+
 ### Sample Code 
 
 ``` python EM/em.py data/sample_data.txt EM/sample_output 15 1000 1 1 0.001 10 ```
