@@ -46,7 +46,7 @@ After preparing data as above, the EM script as follows:
 
 ### Sample Code 
 
-``` python EM/em.py data/sample_data.txt EM/sample_output 15 1000 1 1 0.001 1 ```
+``` python EM/em.py data/sample_data.txt EM/sample_output 15 1000 1 1 0.001 10 ```
 
 Currently, the estimated methylation proportions for the reference and the estimated cell type proportions are output in pickled python numpy arrays. These can be read back into python for further analysis by the following
 
