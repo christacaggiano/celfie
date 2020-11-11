@@ -6,6 +6,8 @@ Expectation maximization algorithm to decompose complex mixtures of cfDNA into t
 
 ## Preparing Data
 
+*** tim code forthcoming as of 11/2020, all sample preparation code in beta ***
+
 CelFiE expects the methylation data for a cfDNA individual or reference cell type is in the form of # of methylated reads, # of total reads. For example for one sample, the file could like like:
 ```
 # CHR START END METH  DEPTH   
@@ -44,7 +46,7 @@ After preparing data as above, the EM script as follows:
 
 ``` python EM/em.py <input_file> <output_directory> <num of cfDNA samples> <max EM iterations> <num of unknown categories> <parallel job ID> <convergence> <num of random restarts per replicate> ```
 
-Since there is some stochasticity in the EM intialization > 10 random restarts is desirable for a final data run. 
+Since there is some stochasticity in the EM > 10 random restarts is desirable for a final data run. 
 
 ### Sample Code 
 
