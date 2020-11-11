@@ -58,6 +58,15 @@ cell_proportions = pkl.load(open("EM/sample_output/1_alpha.pkl", "rb"))
 methylation_proportions = pkl.load(open("EM/sample_output/1_gamma.pkl", "rb"))
 ```
 
+### L1 projection method 
+
+We also developed a method to project estimates onto the L1 ball, based on Duchi et al 2008. The code for this method is available at `EM/projection.py`. It can be ran as 
+
+``` python projection.py <output_dir> <replicate> <number of tissues> <number of sites> <number of individuals> <input depth> <reference depth> <tissue_proportions.pkl>
+```
+
+Sample tissue proportions are included at `EM/simulations/unknown_sim_0201_10people.pkl`. 
+
 ### Parallelization 
 
 To run many parallel replicates on a SGE or UGE cluster configuration, see run_real_data.sh
