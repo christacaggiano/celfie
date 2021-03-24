@@ -3,7 +3,6 @@ import numpy as np
 import bottleneck as bn  # faster nan calcs
 import heapq
 from collections import defaultdict
-import pickle as pkl
 import sys
 
 
@@ -11,7 +10,13 @@ def distance(values):
 	"""
 	calculates the absolute difference between the tissue methylation
 	and the median for a CpG
+
+	values: array of methylation proportions for all tissues
+
+	return: distance between each tissue methylation prop and median, CpG
+	median methylation
 	"""
+
 	median = bn.nanmedian(values)
 	dist = np.abs(values - median)
 	return dist, median
@@ -20,9 +25,20 @@ def distance(values):
 def add_to_heap(heap, n, dist, median, cpg, percent, num):
 	"""
 	keep track of the top CpGs using a max heap of size n
+
+	heap: max heap keeping track of top tims for a specific tissues
+	n: size of max heap
+	dist: distance between tissue methylation and median methylation
+	median: median methylation for CpG
+	cpg: cpg positional information (tuple of chrom, start, end)
+	percent: tissue methylation percent
+	num: tissue number
+
+	return: none
 	"""
-	if len(heap) < n:
-		heapq.heappush(heap, (dist, cpg, median, percent, num))
+
+	if len(heap) < n:  # only keep track of the n CpGs with greatest distance
+		heapq.heappush(heap, (dist, cpg, median, percent, num))  # note- works because it only checks value of dist, not the rest of the tuple
 	else:
 		heapq.heappushpop(heap, (dist, cpg, median, percent, num))
 
@@ -30,12 +46,21 @@ def add_to_heap(heap, n, dist, median, cpg, percent, num):
 def get_cpgs(heap_list):
 	"""
 	converts heap to a default dict in order to print
+
+	heap_list: list of max heaps- size is the number of tissues
+
+	return: dictionary of CpGs and TIM values
 	"""
 
 	cpgs = defaultdict(list)
+
 	for heap in heap_list:
-		for value in heap:
+		for value in heap:  # iterate over list of heaps
+
+			# dictionary is CpG position info: number of tissue, distance between
+			# tissue meth and median, methylation percent for tissue, median CpG meth
 			cpgs[tuple(value[1])].append((value[4], value[0], value[3], value[2]))
+
 	return cpgs
 
 
@@ -46,16 +71,14 @@ if __name__ == "__main__":
 	output_file = sys.argv[2]  # path to output file
 	num_values = int(sys.argv[3])  # number of values to keep as tims
 	tissues = int(sys.argv[4]) # total number of tissues to calc tims for
-
 	depth_filter = int(sys.argv[5]) # depth filter
-	nan_filter = int(sys.argv[6])  #
+	nan_filter = int(sys.argv[6])  # number of nans to allow in TIM calc
 
-	# list of heaps needed to count max distances for each tissue s
+	# list of heaps needed to count max distances for each tissue
 	distance_heaps = [[] for i in range(tissues)]
 
 	with open(input_file, "r") as f:
 		bed = csv.reader(f, delimiter="\t")
-		set_of_cpgs = set()
 
 		for line in bed:
 			cpg = line[0:3]  # positional information
@@ -79,16 +102,14 @@ if __name__ == "__main__":
 
 	cpgs = get_cpgs(distance_heaps)  # get TIM heap for printing
 
-	# # dumps out a pickle file of heap for debugging
-	# with open(output_file + ".pkl", 'wb') as f:
-	# 	pkl.dump(distance_heaps, f)
-
 
 	# write the output file as tab delimited file with columns being:
 	# chrom, start, end, tissue # for tim, absolute difference, methylation prop for tissue, median methylation
 	# for all other tissues
 	with open(output_file, "w") as o:
 			dist_out = csv.writer(o, delimiter="\t")
+
+			# header 
 			dist_out.writerow(["chrom", "start", "end", "tissue number", "difference", "tissue methylation", "other tissue methylation"])
 
 			for c in cpgs:
