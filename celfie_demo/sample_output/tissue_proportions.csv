@@ -1,0 +1,301 @@
+samples,tissue,estimate,status
+nonpreg1,dendritic,0.05595907413823778,not pregnant
+nonpreg2,dendritic,0.16650127467182013,not pregnant
+nonpreg3,dendritic,0.10013869391992923,not pregnant
+nonpreg4,dendritic,0.06399879262985013,not pregnant
+nonpreg5,dendritic,0.09164502702207268,not pregnant
+nonpreg6,dendritic,0.00014434072269306697,not pregnant
+nonpreg7,dendritic,0.07526689398373697,not pregnant
+nonpreg8,dendritic,0.05547217278863592,not pregnant
+preg1,dendritic,0.006602789171480091,pregnant
+preg2,dendritic,0.0012985756361996016,pregnant
+preg3,dendritic,0.01858107059507625,pregnant
+preg4,dendritic,0.030437736119320432,pregnant
+preg5,dendritic,0.0816984609222092,pregnant
+preg6,dendritic,0.021848072996151716,pregnant
+preg7,dendritic,0.005245639408911512,pregnant
+nonpreg1,endothelial,0.054400018688679386,not pregnant
+nonpreg2,endothelial,0.0942037311344076,not pregnant
+nonpreg3,endothelial,0.017230252147985303,not pregnant
+nonpreg4,endothelial,0.010728672761661298,not pregnant
+nonpreg5,endothelial,0.002472770143002793,not pregnant
+nonpreg6,endothelial,0.03840248680903536,not pregnant
+nonpreg7,endothelial,0.053722916680702865,not pregnant
+nonpreg8,endothelial,0.0006872631181941423,not pregnant
+preg1,endothelial,0.03261202980640029,pregnant
+preg2,endothelial,0.08607983573550854,pregnant
+preg3,endothelial,0.009167126057449449,pregnant
+preg4,endothelial,0.046930088743762664,pregnant
+preg5,endothelial,0.09672639345317993,pregnant
+preg6,endothelial,0.043284872606837305,pregnant
+preg7,endothelial,0.05599441195509405,pregnant
+nonpreg1,eosinophil,0.057692725442121486,not pregnant
+nonpreg2,eosinophil,0.06164439535059059,not pregnant
+nonpreg3,eosinophil,0.09464647509465424,not pregnant
+nonpreg4,eosinophil,0.14210943003990967,not pregnant
+nonpreg5,eosinophil,0.0804663748614008,not pregnant
+nonpreg6,eosinophil,0.13164075473719936,not pregnant
+nonpreg7,eosinophil,0.07754131476269742,not pregnant
+nonpreg8,eosinophil,0.05845420906157658,not pregnant
+preg1,eosinophil,0.05213484516865012,pregnant
+preg2,eosinophil,0.05270537401708587,pregnant
+preg3,eosinophil,0.008198873843294308,pregnant
+preg4,eosinophil,0.05554175560591574,pregnant
+preg5,eosinophil,0.024968739387868068,pregnant
+preg6,eosinophil,0.010737513745178845,pregnant
+preg7,eosinophil,0.0952423665792846,pregnant
+nonpreg1,erythroblast,0.12719469625374638,not pregnant
+nonpreg2,erythroblast,0.0354396897997981,not pregnant
+nonpreg3,erythroblast,0.0998209957944691,not pregnant
+nonpreg4,erythroblast,0.03125767426088076,not pregnant
+nonpreg5,erythroblast,0.07399419781089335,not pregnant
+nonpreg6,erythroblast,0.06580795165021433,not pregnant
+nonpreg7,erythroblast,0.14535873281612616,not pregnant
+nonpreg8,erythroblast,0.02189373645656499,not pregnant
+preg1,erythroblast,0.11184944914206467,pregnant
+preg2,erythroblast,0.012047978529250604,pregnant
+preg3,erythroblast,0.16088828860677695,pregnant
+preg4,erythroblast,0.022497369658962905,pregnant
+preg5,erythroblast,0.15934256418429096,pregnant
+preg6,erythroblast,0.06561741831730028,pregnant
+preg7,erythroblast,0.03194378817660157,pregnant
+nonpreg1,macrophage,0.027515748596454576,not pregnant
+nonpreg2,macrophage,0.029870268875904327,not pregnant
+nonpreg3,macrophage,0.01400415702785367,not pregnant
+nonpreg4,macrophage,0.03125413819493647,not pregnant
+nonpreg5,macrophage,0.029403469571147176,not pregnant
+nonpreg6,macrophage,0.009338593044731287,not pregnant
+nonpreg7,macrophage,0.012025121651075523,not pregnant
+nonpreg8,macrophage,0.0608543533372469,not pregnant
+preg1,macrophage,0.03614071444977148,pregnant
+preg2,macrophage,0.046693785293234175,pregnant
+preg3,macrophage,0.03661063420121057,pregnant
+preg4,macrophage,0.029814562221864162,pregnant
+preg5,macrophage,0.03493496029502231,pregnant
+preg6,macrophage,0.01828686401381852,pregnant
+preg7,macrophage,0.17470158848255582,pregnant
+nonpreg1,monocyte,0.048066298316650345,not pregnant
+nonpreg2,monocyte,0.07092061470660813,not pregnant
+nonpreg3,monocyte,0.08841470980630169,not pregnant
+nonpreg4,monocyte,0.08267852013351659,not pregnant
+nonpreg5,monocyte,0.05978160981340145,not pregnant
+nonpreg6,monocyte,0.17909192616837696,not pregnant
+nonpreg7,monocyte,0.1140219417325306,not pregnant
+nonpreg8,monocyte,0.06630858693637165,not pregnant
+preg1,monocyte,0.03147149180175926,pregnant
+preg2,monocyte,0.08129424817459202,pregnant
+preg3,monocyte,0.04436635418327146,pregnant
+preg4,monocyte,0.03369083502419755,pregnant
+preg5,monocyte,0.04166281079120436,pregnant
+preg6,monocyte,0.08350606933243272,pregnant
+preg7,monocyte,0.013148033318659222,pregnant
+nonpreg1,neutrophil,0.0819695708327171,not pregnant
+nonpreg2,neutrophil,0.05312650567676429,not pregnant
+nonpreg3,neutrophil,0.1313976564113124,not pregnant
+nonpreg4,neutrophil,0.1956960687206039,not pregnant
+nonpreg5,neutrophil,0.15688269877182673,not pregnant
+nonpreg6,neutrophil,0.14971823839199008,not pregnant
+nonpreg7,neutrophil,0.11465702404564833,not pregnant
+nonpreg8,neutrophil,0.18498878187243906,not pregnant
+preg1,neutrophil,0.24736747613162785,pregnant
+preg2,neutrophil,0.24980327461171264,pregnant
+preg3,neutrophil,0.134352907587535,pregnant
+preg4,neutrophil,0.32969822194300497,pregnant
+preg5,neutrophil,0.08114213309513044,pregnant
+preg6,neutrophil,0.0634349357786493,pregnant
+preg7,neutrophil,0.08573934382275518,pregnant
+nonpreg1,placenta,0.0034696997153575108,not pregnant
+nonpreg2,placenta,0.01106670516569275,not pregnant
+nonpreg3,placenta,0.013800623417992968,not pregnant
+nonpreg4,placenta,0.014016237961740542,not pregnant
+nonpreg5,placenta,0.004472918708993006,not pregnant
+nonpreg6,placenta,0.013770676065159628,not pregnant
+nonpreg7,placenta,0.0040112908836340095,not pregnant
+nonpreg8,placenta,0.004720099290991857,not pregnant
+preg1,placenta,0.07682959816053643,pregnant
+preg2,placenta,0.11835551012540628,pregnant
+preg3,placenta,0.08729445978172905,pregnant
+preg4,placenta,0.11297124320772454,pregnant
+preg5,placenta,0.08424641862301853,pregnant
+preg6,placenta,0.03642091283735348,pregnant
+preg7,placenta,0.12939958712613894,pregnant
+nonpreg1,tcell,0.04961866225028306,not pregnant
+nonpreg2,tcell,0.07435003104802336,not pregnant
+nonpreg3,tcell,0.06222384349310934,not pregnant
+nonpreg4,tcell,0.06778312281196698,not pregnant
+nonpreg5,tcell,0.035138688927806166,not pregnant
+nonpreg6,tcell,0.05596649116280037,not pregnant
+nonpreg7,tcell,0.020073941670357576,not pregnant
+nonpreg8,tcell,0.04589165247195932,not pregnant
+preg1,tcell,0.044454638514599534,pregnant
+preg2,tcell,0.05135567664074372,pregnant
+preg3,tcell,0.02866051442257876,pregnant
+preg4,tcell,0.06093310164486001,pregnant
+preg5,tcell,0.04384020550446524,pregnant
+preg6,tcell,0.031749644354819716,pregnant
+preg7,tcell,0.05011297587101506,pregnant
+nonpreg1,adipose,1.774862125597924e-41,not pregnant
+nonpreg2,adipose,2.455192720230259e-29,not pregnant
+nonpreg3,adipose,2.300845302135035e-36,not pregnant
+nonpreg4,adipose,2.038158283502659e-33,not pregnant
+nonpreg5,adipose,2.309656229949128e-44,not pregnant
+nonpreg6,adipose,1.7800959637029242e-32,not pregnant
+nonpreg7,adipose,3.184939799764132e-32,not pregnant
+nonpreg8,adipose,4.9152418970732044e-42,not pregnant
+preg1,adipose,4.538779277151036e-51,pregnant
+preg2,adipose,2.686069981833372e-17,pregnant
+preg3,adipose,7.12866446914225e-41,pregnant
+preg4,adipose,2.7011930533620962e-20,pregnant
+preg5,adipose,9.473734889866395e-15,pregnant
+preg6,adipose,1.9110650961841513e-43,pregnant
+preg7,adipose,0.000672906708694359,pregnant
+nonpreg1,brain,1.2048003777550564e-45,not pregnant
+nonpreg2,brain,1.9455088158342432e-33,not pregnant
+nonpreg3,brain,4.461438004222014e-43,not pregnant
+nonpreg4,brain,5.800774167306556e-37,not pregnant
+nonpreg5,brain,1.6879110304829777e-55,not pregnant
+nonpreg6,brain,5.541354877656137e-35,not pregnant
+nonpreg7,brain,5.443749373777401e-32,not pregnant
+nonpreg8,brain,3.432092628438951e-46,not pregnant
+preg1,brain,5.554845166650549e-59,pregnant
+preg2,brain,9.901632346255307e-18,pregnant
+preg3,brain,5.491697138218097e-43,pregnant
+preg4,brain,3.579676567349725e-22,pregnant
+preg5,brain,6.724057928952848e-14,pregnant
+preg6,brain,1.1988370221792598e-51,pregnant
+preg7,brain,0.0009224058639774567,pregnant
+nonpreg1,fibroblast,8.805402565032261e-11,not pregnant
+nonpreg2,fibroblast,7.95060118917527e-05,not pregnant
+nonpreg3,fibroblast,1.045021994269185e-06,not pregnant
+nonpreg4,fibroblast,1.3088448746154314e-08,not pregnant
+nonpreg5,fibroblast,1.0454339822780796e-07,not pregnant
+nonpreg6,fibroblast,1.3176923067800044e-06,not pregnant
+nonpreg7,fibroblast,3.425734321826513e-05,not pregnant
+nonpreg8,fibroblast,0.0008722005073776,not pregnant
+preg1,fibroblast,5.599022773440257e-12,pregnant
+preg2,fibroblast,0.00015044083647829652,pregnant
+preg3,fibroblast,1.2323138348166745e-06,pregnant
+preg4,fibroblast,2.2574604520373875e-08,pregnant
+preg5,fibroblast,1.091425958325392e-06,pregnant
+preg6,fibroblast,3.8696012709173475e-09,pregnant
+preg7,fibroblast,2.846256015590203e-07,pregnant
+nonpreg1,heart,2.685937933619652e-33,not pregnant
+nonpreg2,heart,6.956907845961177e-23,not pregnant
+nonpreg3,heart,4.908052075576478e-29,not pregnant
+nonpreg4,heart,1.6009954601992527e-25,not pregnant
+nonpreg5,heart,2.0399776664093987e-34,not pregnant
+nonpreg6,heart,3.55134231346821e-25,not pregnant
+nonpreg7,heart,3.486215567890647e-25,not pregnant
+nonpreg8,heart,5.0415348218491134e-34,not pregnant
+preg1,heart,2.99101818393193e-39,pregnant
+preg2,heart,7.199191388042111e-13,pregnant
+preg3,heart,6.524147053150102e-33,pregnant
+preg4,heart,2.8540673643363446e-17,pregnant
+preg5,heart,1.6500930644443276e-13,pregnant
+preg6,heart,5.764176853907543e-33,pregnant
+preg7,heart,3.335035427103661e-07,pregnant
+nonpreg1,hepatocyte,1.231779350193306e-36,not pregnant
+nonpreg2,hepatocyte,4.929074027571238e-27,not pregnant
+nonpreg3,hepatocyte,4.2958572812874875e-39,not pregnant
+nonpreg4,hepatocyte,5.6059554383658066e-33,not pregnant
+nonpreg5,hepatocyte,6.239612064222769e-48,not pregnant
+nonpreg6,hepatocyte,4.839542711175348e-29,not pregnant
+nonpreg7,hepatocyte,3.6667138336937007e-28,not pregnant
+nonpreg8,hepatocyte,4.3509050269472964e-41,not pregnant
+preg1,hepatocyte,1.1074818401520535e-51,pregnant
+preg2,hepatocyte,1.300872070571306e-14,pregnant
+preg3,hepatocyte,1.048316410449128e-34,pregnant
+preg4,hepatocyte,3.940282510566062e-21,pregnant
+preg5,hepatocyte,2.442876370415484e-10,pregnant
+preg6,hepatocyte,7.394196876877423e-47,pregnant
+preg7,hepatocyte,6.34082404840012e-05,pregnant
+nonpreg1,lung,3.361980523186601e-43,not pregnant
+nonpreg2,lung,3.7260326192307316e-30,not pregnant
+nonpreg3,lung,1.6930225726080859e-40,not pregnant
+nonpreg4,lung,1.2942148587732498e-35,not pregnant
+nonpreg5,lung,2.2784803621945826e-50,not pregnant
+nonpreg6,lung,3.4229340041328754e-33,not pregnant
+nonpreg7,lung,6.416321910942409e-33,not pregnant
+nonpreg8,lung,4.4841445977919446e-44,not pregnant
+preg1,lung,1.0693382751812374e-54,pregnant
+preg2,lung,2.7527336371360888e-15,pregnant
+preg3,lung,2.840760742369067e-42,pregnant
+preg4,lung,2.7777089942542115e-20,pregnant
+preg5,lung,1.758901204628388e-12,pregnant
+preg6,lung,4.26315393559808e-48,pregnant
+preg7,lung,0.006201916983018042,pregnant
+nonpreg1,mammary,2.0266848949832146e-27,not pregnant
+nonpreg2,mammary,1.0277097149469763e-19,not pregnant
+nonpreg3,mammary,6.191058982033745e-31,not pregnant
+nonpreg4,mammary,8.273123292638706e-27,not pregnant
+nonpreg5,mammary,2.6539635416822805e-35,not pregnant
+nonpreg6,mammary,1.013971123085222e-19,not pregnant
+nonpreg7,mammary,6.46756287757212e-25,not pregnant
+nonpreg8,mammary,5.2749676044799715e-31,not pregnant
+preg1,mammary,2.2742724254433652e-38,pregnant
+preg2,mammary,3.26658956766637e-14,pregnant
+preg3,mammary,2.5134552080724987e-24,pregnant
+preg4,mammary,1.9129145277248288e-18,pregnant
+preg5,mammary,5.237244138945343e-06,pregnant
+preg6,mammary,3.3175947921431342e-37,pregnant
+preg7,mammary,4.887366311767667e-10,pregnant
+nonpreg1,megakaryocyte,0.08125287548982875,not pregnant
+nonpreg2,megakaryocyte,0.09663105497204436,not pregnant
+nonpreg3,megakaryocyte,0.04581559814754263,not pregnant
+nonpreg4,megakaryocyte,0.06273842156703632,not pregnant
+nonpreg5,megakaryocyte,0.16925451813744846,not pregnant
+nonpreg6,megakaryocyte,0.07956355238641767,not pregnant
+nonpreg7,megakaryocyte,0.08454788988036263,not pregnant
+nonpreg8,megakaryocyte,0.1587673951727405,not pregnant
+preg1,megakaryocyte,0.1277070856278699,pregnant
+preg2,megakaryocyte,0.03308095977274041,pregnant
+preg3,megakaryocyte,0.16730037009300194,pregnant
+preg4,megakaryocyte,0.09005399488289913,pregnant
+preg5,megakaryocyte,0.0714388963600275,pregnant
+preg6,megakaryocyte,0.3127930811702692,pregnant
+preg7,megakaryocyte,0.0779870894277984,pregnant
+nonpreg1,skeletal,0.01128921437801233,not pregnant
+nonpreg2,skeletal,3.311367675903143e-05,not pregnant
+nonpreg3,skeletal,0.016145191463221898,not pregnant
+nonpreg4,skeletal,1.3634983632667378e-07,not pregnant
+nonpreg5,skeletal,4.158583554214854e-06,not pregnant
+nonpreg6,skeletal,0.0011064985465704922,not pregnant
+nonpreg7,skeletal,0.00014763033962337532,not pregnant
+nonpreg8,skeletal,9.6043750378043e-10,not pregnant
+preg1,skeletal,4.7968940967446236e-08,pregnant
+preg2,skeletal,1.3608104367168085e-06,pregnant
+preg3,skeletal,1.6365007240938218e-06,pregnant
+preg4,skeletal,3.4600632447793737e-08,pregnant
+preg5,skeletal,0.006991543261827295,pregnant
+preg6,skeletal,2.613642620222676e-06,pregnant
+preg7,skeletal,0.001976981598823537,pregnant
+nonpreg1,small,0.04729579249915662,not pregnant
+nonpreg2,small,0.0066505332397758105,not pregnant
+nonpreg3,small,0.04837731787571066,not pregnant
+nonpreg4,small,0.015266642661204718,not pregnant
+nonpreg5,small,0.02120242855813921,not pregnant
+nonpreg6,small,0.028400545758232976,not pregnant
+nonpreg7,small,0.05141047873954712,not pregnant
+nonpreg8,small,0.0733101053695823,not pregnant
+preg1,small,0.05220138545908682,pregnant
+preg2,small,0.0431677119579084,pregnant
+preg3,small,0.049791079841592235,pregnant
+preg4,small,0.032391080024286284,pregnant
+preg5,small,0.01830815773474511,pregnant
+preg6,small,0.05539503228745569,pregnant
+preg7,small,0.0365056217645653,pregnant
+nonpreg1,unknown1,0.3542756233107006,not pregnant
+nonpreg2,unknown1,0.2994825756699198,not pregnant
+nonpreg3,unknown1,0.2679834403779228,not pregnant
+nonpreg4,unknown1,0.28247212881840755,not pregnant
+nonpreg5,unknown1,0.27528103454691577,not pregnant
+nonpreg6,unknown1,0.2470466268642717,not pregnant
+nonpreg7,unknown1,0.2471805654707392,not pregnant
+nonpreg8,unknown1,0.2677794426558817,not pregnant
+preg1,unknown1,0.18062844859161345,pregnant
+preg2,unknown1,0.22396526785793444,pregnant
+preg3,unknown1,0.25478545197192504,pregnant
+preg4,unknown1,0.15503995374796456,pregnant
+preg5,unknown1,0.2546923874706253,pregnant
+preg6,unknown1,0.2569229650475117,pregnant
+preg7,unknown1,0.2341413160537421,pregnant
