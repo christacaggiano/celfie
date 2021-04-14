@@ -13,7 +13,7 @@ np.seterr(divide='ignore', invalid='ignore')
 ################  support functions   ################
 
 
-def add_pseduocounts(value, array, meth, meth_depths):
+def add_pseudocounts(value, array, meth, meth_depths):
     """ finds values of gamma where logll cannot be computed, adds pseudo-counts to make
     computation possible
 
@@ -23,11 +23,10 @@ def add_pseduocounts(value, array, meth, meth_depths):
     meth_depths: np array of total number of reads (meth counts + unmethylated counts)
     """
 
-    axis0, axis1 = np.where(array==value)  # find indices where value isn't able to be computed
+    axis0, axis1 = np.where(array == value)  # find indices where value isn't able to be computed
 
-    for i, j in zip(axis0, axis1):
-        meth[i, j] += 1  # add one read to methylated counts
-        meth_depths[i, j] += 2  # adds two reads to total counts
+    meth[axis0, axis1] += 1  # add one read to methylated counts
+    meth_depths[axis0, axis1] += 2  # adds two reads to total counts
 
 
 def check_gamma(array):
@@ -50,24 +49,33 @@ def expectation(gamma, alpha):
     alpha: np matrix of estimated mixing proportions
     """
 
+    alpha = alpha.T[:, np.newaxis, :]
+    gamma = gamma[..., np.newaxis]
 
-    individuals, tissues = alpha.shape
-    sites = gamma.shape[1]
+    p0 = (1. - gamma) * alpha
+    p1 = gamma * alpha
 
-    # pre-defines probability matrices
-    p0 = np.zeros((tissues, sites, individuals))
-    p1 = np.zeros((tissues, sites, individuals))
+    p0 /= np.nansum(p0, axis=0)[np.newaxis, ...]
+    p1 /= np.nansum(p1, axis=0)[np.newaxis, ...]
 
-    for n in range(individuals):
-        for j in range(sites):
-            p0_j = (1-gamma[:, j])*alpha[n, : ]
-            p0_j = p0_j/(bn.nansum(p0_j))
-
-            p1_j = (gamma[:, j])*alpha[n, : ]
-            p1_j = p1_j/(bn.nansum(p1_j))
-
-            p0[:, j, n] = p0_j
-            p1[:, j, n] = p1_j
+    #
+    # individuals, tissues = alpha.shape
+    # sites = gamma.shape[1]
+    #
+    # # pre-defines probability matrices
+    # p0 = np.zeros((tissues, sites, individuals))
+    # p1 = np.zeros((tissues, sites, individuals))
+    #
+    # for n in range(individuals):
+    #     for j in range(sites):
+    #         p0_j = (1-gamma[:, j])*alpha[n, : ]
+    #         p0_j = p0_j/(bn.nansum(p0_j))
+    #
+    #         p1_j = (gamma[:, j])*alpha[n, : ]
+    #         p1_j = p1_j/(bn.nansum(p1_j))
+    #
+    #         p0[:, j, n] = p0_j
+    #         p1[:, j, n] = p1_j
 
     return p0, p1
 
@@ -87,20 +95,21 @@ def log_likelihood(p0, p1, x_depths, x, y_depths, y, gamma, alpha):
 
     tissues, sites, individuals = p0.shape[0], p0.shape[1], p0.shape[2]
 
-    # for easier calculation, split the ll into two terms and calculate iteratively
-    term1 = 0
-    term2 = 0
+    # Reshape arrays for faster computation
+    alpha = alpha.T[:, np.newaxis, :]
+    gamma = gamma[..., np.newaxis]
+
+    y = y[..., np.newaxis]
+    y_depths = y_depths[..., np.newaxis]
+
+    x = x.T[np.newaxis, ...]
+    x_depths = x_depths.T[np.newaxis, ...]
+
     ll = 0
+    ll += np.sum((y + p1 * x) * np.log(gamma))
+    ll += np.sum((y_depths - y + p0 * (x_depths - x)) * np.log(1. - gamma))
+    ll += np.sum((p1 * x + (x_depths - x) * p0) * np.log(alpha))
 
-    for n in range(individuals):
-        for j in range(sites):
-            for i in range(tissues):
-
-                # calculates the q-function; see writeup
-                term1 += np.nan_to_num(y[i, j] + (p1[i, j, n]*x[n, j]))*np.log(gamma[i,j]) + (y_depths[i, j] - y[i, j] + p0[i, j, n]*(x_depths[n, j] - x[n, j]))*np.log(1-gamma[i,j])
-                term2 += np.nan_to_num(((p1[i, j, n]*x[n, j]) + ((x_depths[n, j] - x[n, j])*p0[i, j, n])) * np.log(alpha[n, i]))
-
-                ll += term1 + term2
     return ll
 
 
@@ -145,13 +154,13 @@ def maximization(p0, p1, x, x_depths, y, y_depths):
 
     # check if gamma goes out of bounds, if so add psuedocounts to misbehaving y values
     if check_gamma(gamma):
-        add_pseduocounts(1, gamma, y, y_depths)
-        add_pseduocounts(0, gamma, y, y_depths)
+        add_pseudocounts(1, gamma, y, y_depths)
+        add_pseudocounts(0, gamma, y, y_depths)
         gamma = (term1 + y) / (term0 + term1 + y_depths)   # recalculate gamma
 
     # return alpha to be normalized to sum to 1
-    return np.array([row/row.sum() for row in new_alpha]), gamma
-
+    normalized_new_alpha = new_alpha / np.sum(new_alpha, axis=1)[:, np.newaxis]
+    return normalized_new_alpha, gamma
 
  ########################  run em  ########################
 
@@ -171,11 +180,11 @@ def em(x, x_depths, y, y_depths, num_iterations, convergence_criteria):
 
     # randomly intialize alpha for each iteration
     alpha = np.random.uniform(size=(x.shape[0], y.shape[0]))
-    alpha = np.array([row/row.sum() for row in alpha])  # make alpha sum to 1
+    alpha /= np.sum(alpha, axis=1)[:, np.newaxis]  # make alpha sum to 1
 
     # begin by checking for instances where there are no counts for y or y_depths
-    add_pseduocounts(1, np.nan_to_num(y/y_depths), y, y_depths)
-    add_pseduocounts(0, np.nan_to_num(y/y_depths), y, y_depths)
+    add_pseudocounts(1, np.nan_to_num(y/y_depths), y, y_depths)
+    add_pseudocounts(0, np.nan_to_num(y/y_depths), y, y_depths)
 
     # intialize gamma to reference values
     gamma = y/y_depths
@@ -305,7 +314,7 @@ if __name__=="__main__":
 
     data_df = pd.read_csv(data, delimiter="\t")  # read input samples/reference data
 
-    print("finshed reading " + str(data))
+    print("finished reading " + str(data))
     print()
 
     output_alpha_file = output_dir + "/" + replicate_number + "_tissue_proportions.txt"
