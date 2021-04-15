@@ -7,7 +7,7 @@
 ## Overview
 CelFiE (CELl Free dna decomposItion Expectation maximization) is an expectation maximization algorithm that takes as input, a reference panel and cell-free DNA methylation of several individuals. From this data, CelFiE will estimate the contribution of the reference tissues to the cfDNA of each individual, along with an arbitrary number of missing tissues not contained in the reference data.
 
-For more details, please see our paper, 
+For more details, please see our paper. 
 
 
 ## Installation
@@ -147,11 +147,13 @@ The pipeline can then be ran as
 
 ### EM Script
 
-After preparing data as above, the EM script as follows:
+After preparing data as above, you can run EM script as follows:
 
 ```bash
 python EM/em.py <input_path> <output_directory> <num_samples> <--max_iterations> <--unknowns> <--parallel_job_id <--convergence> <--random_restarts>
 ```
+
+CelFiE takes several parameters. `Input_path`, `output_directory,` and `num_samples` are the only mandatory parameters. 
 
 ```bash
 usage: em.py [-h] [-m MAX_ITERATIONS] [-u UNKNOWNS] [-p PARALLEL_JOB_ID]
@@ -162,8 +164,8 @@ CelFiE - Cell-free DNA decomposition. CelFie estimated the cell type of origin
 proportions of a cell-free DNA sample.
 
 positional arguments:
-  input_path            the path to the input file
-  output_directory      the path to the output directory
+  input_path            The path to the input file
+  output_directory      The path to the output directory
   num_samples           Number of cfdna samples
 
 optional arguments:
@@ -173,7 +175,7 @@ optional arguments:
                         convergence criteria is met. Default 1000.
   -u UNKNOWNS, --unknowns UNKNOWNS
                         Number of unknown categories to be estimated along
-                        with the reference data. Default 1.
+                        with the reference data. Default 1. Can be increased to 2+ for large samples. 
   -p PARALLEL_JOB_ID, --parallel_job_id PARALLEL_JOB_ID
                         Replicate number in a simulation experiment. Default
                         1.
