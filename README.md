@@ -204,6 +204,8 @@ Jupyter notebooks to reproduce figures and statistical analyses for the final ve
 
 ## Acknowledgements
 
+Thanks to Arya Boudaie for help with writing and reviewing this code and to Antoine Passemiers for their tremendous help in speeding up the EM calculation.
+
 ## Contact
 For any questions with this code, please contact christa@g.ucla.edu. I am more than happy to help and very open to any suggestions!
 
