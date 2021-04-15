@@ -67,6 +67,80 @@ chr1	60	61	89.0	115.0 chr1	60	61	92.0	117.0
 ```
 
 
+## Code
+
+### EM Script
+
+After preparing data as above, you can run EM script as follows:
+
+```bash
+python EM/em.py <input_path> <output_directory> <num_samples> <--max_iterations> <--unknowns> <--parallel_job_id <--convergence> <--random_restarts>
+```
+
+CelFiE takes several parameters. `Input_path`, `output_directory,` and `num_samples` are the only mandatory parameters. 
+
+```bash
+usage: em.py [-h] [-m MAX_ITERATIONS] [-u UNKNOWNS] [-p PARALLEL_JOB_ID]
+             [-c CONVERGENCE] [-r RANDOM_RESTARTS]
+             input_path output_directory num_samples
+
+CelFiE - Cell-free DNA decomposition. CelFie estimated the cell type of origin
+proportions of a cell-free DNA sample.
+
+positional arguments:
+  input_path            The path to the input file
+  output_directory      The path to the output directory
+  num_samples           Number of cfdna samples
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -m MAX_ITERATIONS, --max_iterations MAX_ITERATIONS
+                        How long the EM should iterate before stopping, unless
+                        convergence criteria is met. Default 1000.
+  -u UNKNOWNS, --unknowns UNKNOWNS
+                        Number of unknown categories to be estimated along
+                        with the reference data. Default 1. Can be increased to 2+ for large samples. 
+  -p PARALLEL_JOB_ID, --parallel_job_id PARALLEL_JOB_ID
+                        Replicate number in a simulation experiment. Default
+                        1.
+  -c CONVERGENCE, --convergence CONVERGENCE
+                        Convergence criteria for EM. Default 0.001.
+  -r RANDOM_RESTARTS, --random_restarts RANDOM_RESTARTS
+                        CelFiE will perform several random restarts and select
+                        the one with the highest log-likelihood. Default 10.
+```
+
+### Output
+
+CelFiE will output the tissue estimates for each sample in your input - i.e. the proportion of each tissue in the reference making up the cfDNA sample. See `celfie_demo/sample_output/1_tissue_proportions.txt` for an example of this output.
+
+```
+        tissue1 tissue2 .... unknown
+sample1 0.05 0.08 .... 0.1
+sample2 0.7 0.12 .... 0.2
+
+```
+
+CelFiE also outputs the methylation proportions for each of the tissues plus however many unknowns were estimated. This output will look like this:
+
+```   
+      tissue1  tissue2 ... unknown
+CpG1  0.99 1.0 ... 0.3
+CpG2  0.45 0.88 ... 0.1
+```
+
+Sample code for processing both of these outputs can be seen in `demo.ipynb`.
+
+### L1 projection method
+
+We also developed a method to project estimates onto the L1 ball, based on Duchi et al 2008. The code for this method is available at `EM/projection.py`. It can be ran as
+
+```python
+python projection.py <output_dir> <replicate> <number of tissues> <number of sites> <number of individuals> <input depth> <reference depth> <tissue_proportions.pkl>
+```
+
+Sample tissue proportions are included at `EM/simulations/unknown_sim_0201_10people.pkl`.
+
 ## Tissue Informative Markers
 
 In our paper, we identified a set of tissue informative markers (TIMs). We claim that these are a good set of CpGs to use for decomposition.
@@ -142,80 +216,6 @@ The pipeline can then be ran as
 ```bash
 ./tim.sh
 ```
-
-## Code
-
-### EM Script
-
-After preparing data as above, you can run EM script as follows:
-
-```bash
-python EM/em.py <input_path> <output_directory> <num_samples> <--max_iterations> <--unknowns> <--parallel_job_id <--convergence> <--random_restarts>
-```
-
-CelFiE takes several parameters. `Input_path`, `output_directory,` and `num_samples` are the only mandatory parameters. 
-
-```bash
-usage: em.py [-h] [-m MAX_ITERATIONS] [-u UNKNOWNS] [-p PARALLEL_JOB_ID]
-             [-c CONVERGENCE] [-r RANDOM_RESTARTS]
-             input_path output_directory num_samples
-
-CelFiE - Cell-free DNA decomposition. CelFie estimated the cell type of origin
-proportions of a cell-free DNA sample.
-
-positional arguments:
-  input_path            The path to the input file
-  output_directory      The path to the output directory
-  num_samples           Number of cfdna samples
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -m MAX_ITERATIONS, --max_iterations MAX_ITERATIONS
-                        How long the EM should iterate before stopping, unless
-                        convergence criteria is met. Default 1000.
-  -u UNKNOWNS, --unknowns UNKNOWNS
-                        Number of unknown categories to be estimated along
-                        with the reference data. Default 1. Can be increased to 2+ for large samples. 
-  -p PARALLEL_JOB_ID, --parallel_job_id PARALLEL_JOB_ID
-                        Replicate number in a simulation experiment. Default
-                        1.
-  -c CONVERGENCE, --convergence CONVERGENCE
-                        Convergence criteria for EM. Default 0.001.
-  -r RANDOM_RESTARTS, --random_restarts RANDOM_RESTARTS
-                        CelFiE will perform several random restarts and select
-                        the one with the highest log-likelihood. Default 10.
-```
-
-### Output
-
-CelFiE will output the tissue estimates for each sample in your input - i.e. the proportion of each tissue in the reference making up the cfDNA sample. See `celfie_demo/sample_output/1_tissue_proportions.txt` for an example of this output.
-
-```
-        tissue1 tissue2 .... unknown
-sample1 0.05 0.08 .... 0.1
-sample2 0.7 0.12 .... 0.2
-
-```
-
-CelFiE also outputs the methylation proportions for each of the tissues plus however many unknowns were estimated. This output will look like this:
-
-```   
-      tissue1  tissue2 ... unknown
-CpG1  0.99 1.0 ... 0.3
-CpG2  0.45 0.88 ... 0.1
-```
-
-Sample code for processing both of these outputs can be seen in `demo.ipynb`.
-
-### L1 projection method
-
-We also developed a method to project estimates onto the L1 ball, based on Duchi et al 2008. The code for this method is available at `EM/projection.py`. It can be ran as
-
-```python
-python projection.py <output_dir> <replicate> <number of tissues> <number of sites> <number of individuals> <input depth> <reference depth> <tissue_proportions.pkl>
-```
-
-Sample tissue proportions are included at `EM/simulations/unknown_sim_0201_10people.pkl`.
 
 ## Figures
 
