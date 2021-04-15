@@ -3,18 +3,18 @@
 ########  imports  ########
 import numpy as np
 import pandas as pd
-import pickle as pkl # to save output
-import bottleneck as bn # substantially speeds up calculations with nan's
+import pickle as pkl  # to save output
+import bottleneck as bn  # substantially speeds up calculations with nan's
 import os
 import sys
 
-np.seterr(divide='ignore', invalid='ignore')
+np.seterr(divide="ignore", invalid="ignore")
 
 ################  support functions   ################
 
 
 def add_pseudocounts(value, array, meth, meth_depths):
-    """ finds values of gamma where logll cannot be computed, adds pseudo-counts to make
+    """finds values of gamma where logll cannot be computed, adds pseudo-counts to make
     computation possible
 
     value: checks for a value that will prevent computation; either 0 or 1
@@ -23,14 +23,16 @@ def add_pseudocounts(value, array, meth, meth_depths):
     meth_depths: np array of total number of reads (meth counts + unmethylated counts)
     """
 
-    axis0, axis1 = np.where(array == value)  # find indices where value isn't able to be computed
+    axis0, axis1 = np.where(
+        array == value
+    )  # find indices where value isn't able to be computed
 
     meth[axis0, axis1] += 1  # add one read to methylated counts
     meth_depths[axis0, axis1] += 2  # adds two reads to total counts
 
 
 def check_gamma(array):
-    """ checks for values of gamma where log likelihood cannot be computed, returns
+    """checks for values of gamma where log likelihood cannot be computed, returns
     true if can be computed
 
     array: np array to check
@@ -43,7 +45,7 @@ def check_gamma(array):
 
 
 def expectation(gamma, alpha):
-    """ calculates the components needed for loglikelihood for each iteration of gamma and alpha
+    """calculates the components needed for loglikelihood for each iteration of gamma and alpha
 
     gamma: np matrix of the estimated 'true' methylation proportions
     alpha: np matrix of estimated mixing proportions
@@ -52,7 +54,7 @@ def expectation(gamma, alpha):
     alpha = alpha.T[:, np.newaxis, :]
     gamma = gamma[..., np.newaxis]
 
-    p0 = (1. - gamma) * alpha
+    p0 = (1.0 - gamma) * alpha
     p1 = gamma * alpha
 
     p0 /= np.nansum(p0, axis=0)[np.newaxis, ...]
@@ -81,7 +83,7 @@ def expectation(gamma, alpha):
 
 
 def log_likelihood(p0, p1, x_depths, x, y_depths, y, gamma, alpha):
-    """ calculates the log likelihood P(X, Z, Y | alpha, gamma)
+    """calculates the log likelihood P(X, Z, Y | alpha, gamma)
 
     p0: probability that read is methylated
     p1: probability read is unmethylated
@@ -107,7 +109,7 @@ def log_likelihood(p0, p1, x_depths, x, y_depths, y, gamma, alpha):
 
     ll = 0
     ll += np.sum((y + p1 * x) * np.log(gamma))
-    ll += np.sum((y_depths - y + p0 * (x_depths - x)) * np.log(1. - gamma))
+    ll += np.sum((y_depths - y + p0 * (x_depths - x)) * np.log(1.0 - gamma))
     ll += np.sum((p1 * x + (x_depths - x) * p0) * np.log(alpha))
 
     return ll
@@ -115,7 +117,7 @@ def log_likelihood(p0, p1, x_depths, x, y_depths, y, gamma, alpha):
 
 def maximization(p0, p1, x, x_depths, y, y_depths):
 
-    """ maximizes log-likelihood, calculated in the expectation step
+    """maximizes log-likelihood, calculated in the expectation step
     calculates new alpha and gamma given these new parameters
 
     p0: probability that read is methylated
@@ -125,7 +127,6 @@ def maximization(p0, p1, x, x_depths, y, y_depths):
     y_depths: reference matrix read depths
     y: reference methylated counts
     """
-
 
     individuals = p0.shape[2]
 
@@ -145,10 +146,12 @@ def maximization(p0, p1, x, x_depths, y, y_depths):
 
     for n in range(individuals):
 
-        new_alpha[n, :] = np.dot(p1[:, :, n], x[n,:]) + np.matmul(p0[:, :, n], (x_depths[n, :]-x[n, :]))
+        new_alpha[n, :] = np.dot(p1[:, :, n], x[n, :]) + np.matmul(
+            p0[:, :, n], (x_depths[n, :] - x[n, :])
+        )
 
-        term1 +=  p1[:, :, n]*(np.outer(ones_vector, x[n,:]))
-        term0 +=  p0[:, :, n]*(np.outer(ones_vector, x_depths[n,:]-x[n,:]))
+        term1 += p1[:, :, n] * (np.outer(ones_vector, x[n, :]))
+        term0 += p0[:, :, n] * (np.outer(ones_vector, x_depths[n, :] - x[n, :]))
 
     gamma = (term1 + y) / (term0 + term1 + y_depths)  # calculate new gamma
 
@@ -156,17 +159,18 @@ def maximization(p0, p1, x, x_depths, y, y_depths):
     if check_gamma(gamma):
         add_pseudocounts(1, gamma, y, y_depths)
         add_pseudocounts(0, gamma, y, y_depths)
-        gamma = (term1 + y) / (term0 + term1 + y_depths)   # recalculate gamma
+        gamma = (term1 + y) / (term0 + term1 + y_depths)  # recalculate gamma
 
     # return alpha to be normalized to sum to 1
     normalized_new_alpha = new_alpha / np.sum(new_alpha, axis=1)[:, np.newaxis]
     return normalized_new_alpha, gamma
 
- ########################  run em  ########################
+
+########################  run em  ########################
 
 
 def em(x, x_depths, y, y_depths, num_iterations, convergence_criteria):
-    """ take in the input cfdna matrices and the reference data and
+    """take in the input cfdna matrices and the reference data and
     runs the EM for the specified number of iterations, or stops once the
     convergence_criteria is reached
 
@@ -183,11 +187,11 @@ def em(x, x_depths, y, y_depths, num_iterations, convergence_criteria):
     alpha /= np.sum(alpha, axis=1)[:, np.newaxis]  # make alpha sum to 1
 
     # begin by checking for instances where there are no counts for y or y_depths
-    add_pseudocounts(1, np.nan_to_num(y/y_depths), y, y_depths)
-    add_pseudocounts(0, np.nan_to_num(y/y_depths), y, y_depths)
+    add_pseudocounts(1, np.nan_to_num(y / y_depths), y, y_depths)
+    add_pseudocounts(0, np.nan_to_num(y / y_depths), y, y_depths)
 
     # intialize gamma to reference values
-    gamma = y/y_depths
+    gamma = y / y_depths
 
     # perform EM for a given number of iterations
     for i in range(num_iterations):
@@ -196,23 +200,27 @@ def em(x, x_depths, y, y_depths, num_iterations, convergence_criteria):
         a, g = maximization(p0, p1, x, x_depths, y, y_depths)
 
         # check convergence of alpha and gamma
-        alpha_diff = np.mean(abs(a-alpha))/np.mean(abs(alpha))
-        gamma_diff = np.mean(abs(g-gamma))/np.mean(abs(gamma))
+        alpha_diff = np.mean(abs(a - alpha)) / np.mean(abs(alpha))
+        gamma_diff = np.mean(abs(g - gamma)) / np.mean(abs(gamma))
 
-        if alpha_diff + gamma_diff < convergence_criteria:  # if convergence criteria, break
+        if (
+            alpha_diff + gamma_diff < convergence_criteria
+        ):  # if convergence criteria, break
             break
 
         else:  # set current evaluation of alpha and gamma
             alpha = a
             gamma = g
 
-
-    ll = log_likelihood(p0, p1, x_depths, x, y_depths, y, gamma, alpha)  # print ll for random restarts
+    ll = log_likelihood(
+        p0, p1, x_depths, x, y_depths, y, gamma, alpha
+    )  # print ll for random restarts
 
     return alpha, gamma, ll
 
 
 ################## read in data #######################
+
 
 def define_arrays(sample, num_samples, num_unk):
     """
@@ -226,8 +234,8 @@ def define_arrays(sample, num_samples, num_unk):
     num_unk: number of unknowns to estimate
     """
 
-    test = sample.iloc[:, 3:(num_samples*2)+3].values.T
-    train = sample.iloc[:, (num_samples*2)+3+3:].values.T
+    test = sample.iloc[:, 3 : (num_samples * 2) + 3].values.T
+    train = sample.iloc[:, (num_samples * 2) + 3 + 3 :].values.T
 
     x = test[::2, :]
     x_depths = test[1::2, :]
@@ -240,7 +248,12 @@ def define_arrays(sample, num_samples, num_unk):
     y_depths_unknown = np.append(y_depths, unknown, axis=0)
     y_unknown = np.append(y, unknown, axis=0)
 
-    return np.nan_to_num(x), np.nan_to_num(x_depths), np.nan_to_num(y_unknown), np.nan_to_num(y_depths_unknown)
+    return (
+        np.nan_to_num(x),
+        np.nan_to_num(x_depths),
+        np.nan_to_num(y_unknown),
+        np.nan_to_num(y_depths_unknown),
+    )
 
 
 def parse_header_names(header):
@@ -264,10 +277,14 @@ def get_header(sample, num_samples, num_unk):
 
     header = list(sample)
 
-    samples = parse_header_names(header[3:(num_samples*2)+3])  # samples are first part of header
-    tissues = parse_header_names(header[(num_samples*2)+3+3:])  # tissues are second part of header
+    samples = parse_header_names(
+        header[3 : (num_samples * 2) + 3]
+    )  # samples are first part of header
+    tissues = parse_header_names(
+        header[(num_samples * 2) + 3 + 3 :]
+    )  # tissues are second part of header
 
-    unknowns = ["unknown" + str(i) for i in range(1, num_unk+1) ]
+    unknowns = ["unknown" + str(i) for i in range(1, num_unk + 1)]
 
     return samples, tissues + unknowns
 
@@ -285,14 +302,16 @@ def write_output(output_file, output_matrix, header, index):
 
     output = pd.DataFrame(output_matrix)
     output.columns = header
-    output.insert(0, "", index)  # insert either the sample names or cpg numbers as first col
+    output.insert(
+        0, "", index
+    )  # insert either the sample names or cpg numbers as first col
 
     output.to_csv(output_file, sep="\t", index=False)  # save as text file
 
 
 ################## run #######################
 
-if __name__=="__main__":
+if __name__ == "__main__":
 
     # read command line input parameters
     data = sys.argv[1]
@@ -305,7 +324,7 @@ if __name__=="__main__":
     num_random_restart = sys.argv[8]
 
     # make output directory if it does not exist
-    if not os.path.exists(output_dir) and int(replicate_number)==1:
+    if not os.path.exists(output_dir) and int(replicate_number) == 1:
         os.makedirs(output_dir)
         print("made " + output_dir + "/")
         print()
@@ -318,11 +337,12 @@ if __name__=="__main__":
     print()
 
     output_alpha_file = output_dir + "/" + replicate_number + "_tissue_proportions.txt"
-    output_gamma_file = output_dir + "/" + replicate_number + "_methylation_proportions.txt"
+    output_gamma_file = (
+        output_dir + "/" + replicate_number + "_methylation_proportions.txt"
+    )
 
     print("beginning generation of " + output_dir)
     print()
-
 
     # make input arrays and add the specified number of unknowns
     x, x_depths, y, y_depths = define_arrays(data_df, int(num_samples), int(num_unk))
@@ -330,16 +350,21 @@ if __name__=="__main__":
     # get header for output files
     samples, tissues = get_header(data_df, int(num_samples), int(num_unk))
 
-
     # Run EM with the specified iterations and convergence criteria
     random_restarts = []
 
     for i in range(int(num_random_restart)):
-        alpha, gamma, ll = em(x, x_depths, y, y_depths, int(iterations), float(convergence_criteria))
+        alpha, gamma, ll = em(
+            x, x_depths, y, y_depths, int(iterations), float(convergence_criteria)
+        )
         random_restarts.append((ll, alpha, gamma))
 
-    ll_max, alpha_max, gamma_max = max(random_restarts)  # pick best random restart per replicate
+    ll_max, alpha_max, gamma_max = max(
+        random_restarts
+    )  # pick best random restart per replicate
 
     # write estimates as text files
     write_output(output_alpha_file, alpha_max, tissues, samples)
-    write_output(output_gamma_file, gamma_max.T, tissues, list(range(len(gamma_max[1]))))
+    write_output(
+        output_gamma_file, gamma_max.T, tissues, list(range(len(gamma_max[1])))
+    )
