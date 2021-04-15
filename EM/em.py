@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 
-########  imports  ########
+import argparse
+import os
+import sys
+
+import bottleneck as bn  # substantially speeds up calculations with nan's
 import numpy as np
 import pandas as pd
 import pickle as pkl  # to save output
-import bottleneck as bn  # substantially speeds up calculations with nan's
-import os
-import sys
 
 np.seterr(divide="ignore", invalid="ignore")
 
@@ -24,8 +25,8 @@ def add_pseudocounts(value, array, meth, meth_depths):
     """
 
     axis0, axis1 = np.where(
-        array == value
-    )  # find indices where value isn't able to be computed
+        array == value  # find indices where value isn't able to be computed
+    )
 
     meth[axis0, axis1] += 1  # add one read to methylated counts
     meth_depths[axis0, axis1] += 2  # adds two reads to total counts
@@ -314,48 +315,82 @@ def write_output(output_file, output_matrix, header, index):
 if __name__ == "__main__":
 
     # read command line input parameters
-    data = sys.argv[1]
-    output_dir = sys.argv[2]
-    num_samples = sys.argv[3]
-    iterations = sys.argv[4]
-    num_unk = sys.argv[5]
-    replicate_number = sys.argv[6]
-    convergence_criteria = sys.argv[7]
-    num_random_restart = sys.argv[8]
+    parser = argparse.ArgumentParser(
+        description="CelFiE - Cell-free DNA decomposition. CelFie estimated the cell type of origin proportions of a cell-free DNA sample."
+    )
+    parser.add_argument("input_path", help="the path to the input file")
+    parser.add_argument("output_directory", help="the path to the output directory")
+    parser.add_argument("num_samples", type=int, help="Number of cfdna samples")
+    parser.add_argument(
+        "-m",
+        "--max_iterations",
+        default=1000,
+        type=int,
+        help="How long the EM should iterate before stopping, unless convergence criteria is met. Default 1000.",
+    )
+    parser.add_argument(
+        "-u",
+        "--unknowns",
+        default=1,
+        type=int,
+        help="Number of unknown categories to be estimated along with the reference data. Default 1.",
+    )
+    parser.add_argument(
+        "-p",
+        "--parallel_job_id",
+        default=1,
+        type=int,
+        help="Replicate number in a simulation experiment. Default 1. ",
+    )
+    parser.add_argument(
+        "-c",
+        "--convergence",
+        default=0.001,
+        type=float,
+        help="Convergence criteria for EM. Default 0.001.",
+    )
+    parser.add_argument(
+        "-r",
+        "--random_restarts",
+        default=10,
+        type=int,
+        help="CelFiE will perform several random restarts and select the one with the highest log-likelihood. Default 10.",
+    )
+    args = parser.parse_args()
 
     # make output directory if it does not exist
-    if not os.path.exists(output_dir) and int(replicate_number) == 1:
-        os.makedirs(output_dir)
-        print("made " + output_dir + "/")
+    if not os.path.exists(args.output_directory) and args.parallel_job_id == 1:
+        os.makedirs(args.output_directory)
+        print("made " + args.output_directory + "/")
         print()
     else:
-        print("writing to " + output_dir + "/")
+        print("writing to " + args.output_directory + "/")
 
-    data_df = pd.read_csv(data, delimiter="\t")  # read input samples/reference data
+    data_df = pd.read_csv(
+        args.input_path, delimiter="\t"
+    )  # read input samples/reference data
 
-    print("finished reading " + str(data))
+    print(f"finished reading {args.input_path}")
     print()
 
-    output_alpha_file = output_dir + "/" + replicate_number + "_tissue_proportions.txt"
-    output_gamma_file = (
-        output_dir + "/" + replicate_number + "_methylation_proportions.txt"
-    )
+    output_alpha_file = f"{args.output_directory}/{args.parallel_job_id}_tissue_proportions.txt"
+    output_gamma_file = f"{args.output_directory}/{args.parallel_job_id}_methylation_proportions.txt"
 
-    print("beginning generation of " + output_dir)
+    print(f"beginning generation of {args.output_directory}")
     print()
 
     # make input arrays and add the specified number of unknowns
-    x, x_depths, y, y_depths = define_arrays(data_df, int(num_samples), int(num_unk))
+    x, x_depths, y, y_depths = define_arrays(data_df, int(args.num_samples), int(args.unknowns))
 
     # get header for output files
-    samples, tissues = get_header(data_df, int(num_samples), int(num_unk))
+    samples, tissues = get_header(data_df, args.num_samples, args.unknowns)
 
     # Run EM with the specified iterations and convergence criteria
     random_restarts = []
 
-    for i in range(int(num_random_restart)):
+    for i in range(args.random_restarts):
         alpha, gamma, ll = em(
-            x, x_depths, y, y_depths, int(iterations), float(convergence_criteria)
+            x, x_depths, y, y_depths, args.max_iterations, args.convergence
         )
         random_restarts.append((ll, alpha, gamma))
 
