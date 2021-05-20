@@ -230,4 +230,4 @@ For any questions with this code, please contact christa@g.ucla.edu. I am more t
 
 ## Citation
 
-Christa Caggiano, Barbara Celona, Fleur Garton, Joel Mefford, Brian Black, Catherine Lomen-Hoerth, Andrew Dahl, Noah Zaitlen, *"Estimating the rate of cell type degeneration from epigenetic sequencing of cell-free DNA"*, BioRxiv, Jan 2020, [DOI]( https://doi.org/10.1101/2020.01.15.907022)
+Christa Caggiano, Barbara Celona, Fleur Garton, Joel Mefford, Brian Black, Catherine Lomen-Hoerth, Andrew Dahl, Noah Zaitlen, *"Comprehensive cell type decomposition of circulating cell-free DNA with CelFiE"*, Nature Communications, May 2021, [link](https://www.nature.com/articles/s41467-021-22901-x)
