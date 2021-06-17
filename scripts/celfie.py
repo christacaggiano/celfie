@@ -61,25 +61,6 @@ def expectation(gamma, alpha):
     p0 /= np.nansum(p0, axis=0)[np.newaxis, ...]
     p1 /= np.nansum(p1, axis=0)[np.newaxis, ...]
 
-    #
-    # individuals, tissues = alpha.shape
-    # sites = gamma.shape[1]
-    #
-    # # pre-defines probability matrices
-    # p0 = np.zeros((tissues, sites, individuals))
-    # p1 = np.zeros((tissues, sites, individuals))
-    #
-    # for n in range(individuals):
-    #     for j in range(sites):
-    #         p0_j = (1-gamma[:, j])*alpha[n, : ]
-    #         p0_j = p0_j/(bn.nansum(p0_j))
-    #
-    #         p1_j = (gamma[:, j])*alpha[n, : ]
-    #         p1_j = p1_j/(bn.nansum(p1_j))
-    #
-    #         p0[:, j, n] = p0_j
-    #         p1[:, j, n] = p1_j
-
     return p0, p1
 
 
@@ -345,9 +326,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "-c",
         "--convergence",
-        default=0.001,
+        default=0.0001,
         type=float,
-        help="Convergence criteria for EM. Default 0.001.",
+        help="Convergence criteria for EM. Default 0.0001.",
     )
     parser.add_argument(
         "-r",

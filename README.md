@@ -27,11 +27,11 @@ CelFiE was developed in Python 3.7.
 To run CelFiE:
 
 ```bash
-python EM/em.py <input_path> <output_directory> <num_samples> <--max_iterations> <--unknowns> <--parallel_job_id <--convergence> <--random_restarts>
+python scripts/celfie.py <input_path> <output_directory> <num_samples> <--max_iterations> <--unknowns> <--parallel_job_id <--convergence> <--random_restarts>
 ```
 For a detailed description of the parameters, see below. To run a test run of CelFiE with the default parameters run: 
 ```bash
-python EM/em.py celfie_demo/sample_data.txt celfie_demo/sample_output 15 
+python scripts/celfie.py celfie_demo/sample_data.txt celfie_demo/sample_output 15 
 ```
 
 
@@ -74,7 +74,7 @@ chr1	60	61	89.0	115.0 chr1	60	61	92.0	117.0
 After preparing data as above, you can run EM script as follows:
 
 ```bash
-python EM/em.py <input_path> <output_directory> <num_samples> <--max_iterations> <--unknowns> <--parallel_job_id <--convergence> <--random_restarts>
+python scripts/celfie.py <input_path> <output_directory> <num_samples> <--max_iterations> <--unknowns> <--parallel_job_id <--convergence> <--random_restarts>
 ```
 
 CelFiE takes several parameters. `Input_path`, `output_directory,` and `num_samples` are the only mandatory parameters. 
@@ -133,13 +133,13 @@ Sample code for processing both of these outputs can be seen in `demo.ipynb`.
 
 ### L1 projection method
 
-We also developed a method to project estimates onto the L1 ball, based on Duchi et al 2008. The code for this method is available at `EM/projection.py`. It can be ran as
+We also developed a method to project estimates onto the L1 ball, based on Duchi et al 2008. The code for this method is available at `scripts/projection.py`. It can be ran as
 
 ```python
 python projection.py <output_dir> <replicate> <number of tissues> <number of sites> <number of individuals> <input depth> <reference depth> <tissue_proportions.pkl>
 ```
 
-Sample tissue proportions are included at `EM/simulations/unknown_sim_0201_10people.pkl`.
+Sample tissue proportions are included at `scripts/simulations/unknown_sim_0201_10people.pkl`.
 
 ## Tissue Informative Markers
 
