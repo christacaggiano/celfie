@@ -34,7 +34,7 @@ window_size=$(($sum_window_size/2))  # define window size
 
 sed '1d' $output_file > $output_file"_no_header"  # remove header
 cut -f 1-3 $output_file"_no_header" > $output_file"_sites"  # keep only position information
-awk -v window="$window_size" '{print $1 "\t" $2-$window "\t" $3+$window}' $output_file"_sites" > $output_file"_"$window_size
+awk -v window="$window_size" '{print $1 "\t" $2-window "\t" $3+window}' $output_file"_sites" > $output_file"_"$window_size
 
 ### speed up the computation over large files by using bedtools to select Cpgs already in region
 bedtools sort -i $output_file"_"$window_size > $output_file"_sorted"
